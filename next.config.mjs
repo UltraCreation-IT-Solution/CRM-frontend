@@ -1,15 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
+    serverActions: {}, // ✅ should be object, not boolean
   },
   images: {
-    domains: [
-      'localhost',
-      '127.0.0.1',
-      // Add your backend domain here
-      'api.yourcrm.com',
-    ],
+    domains: ['localhost', '127.0.0.1', 'api.yourcrm.com'],
     remotePatterns: [
       {
         protocol: 'http',
@@ -35,7 +30,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/:path*`,
       },
     ];
   },
@@ -61,7 +56,6 @@ const nextConfig = {
     ];
   },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Custom webpack configuration for CRM features
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
@@ -69,7 +63,6 @@ const nextConfig = {
       tls: false,
     };
 
-    // Support for WebAssembly (if needed for advanced features)
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
@@ -77,19 +70,10 @@ const nextConfig = {
 
     return config;
   },
-  // Enable static optimization for better performance
   trailingSlash: false,
-  
-  // Output configuration for production builds
   output: 'standalone',
-  
-  // Compression
   compress: true,
-  
-  // Power optimizations
   poweredByHeader: false,
-  
-  // Redirect configuration for CRM routes
   async redirects() {
     return [
       {
@@ -106,4 +90,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
